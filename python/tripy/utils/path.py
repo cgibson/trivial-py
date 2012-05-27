@@ -1,5 +1,6 @@
 import os
 import shutil
+import math
 
 class Path (object):
 
@@ -11,6 +12,18 @@ class Path (object):
 
     def dirname(self):
         return Path( os.path.dirname(self._pathStr) )
+    
+    def ext(self):
+        if self.isDir():
+            raise ValueError("Cannot get extension.  %s is not a file" % self._pathStr)
+        return self._pathStr.split(".")[-1]
+    
+    def changeExt(self, ext):
+        if self.isDir():
+            raise ValueError("Cannot change extension.  %s is not a file" % self._pathStr)
+        toks = self._pathStr.split(".")
+        toks[-1] = ext
+        self._pathStr = ".".join(toks)
 
     def copy(self, dest):
         shutil.copy(self._pathStr, dest)
@@ -47,8 +60,11 @@ class Path (object):
     def mkdirs(self, mode=0777):
         os.makedirs(self._pathStr, mode)
 
-    def open(self, *args):
+    def openFile(self, *args):
         return open(self._pathStr, *args)
+    
+    def hashStr(self):
+        return "hash%d" % math.fabs(hash(self._pathStr))
 
     def remove(self):
         os.remove(self._pathStr)
